@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="approval_request_form_view" model="ir.ui.view">
+        <field name="name">approval.request.form.view</field>
+        <field name="model">approval.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="delivery_id" string="Delivery Id"/>
+            </list>
+        </field>
+    </record>
+</odoo>

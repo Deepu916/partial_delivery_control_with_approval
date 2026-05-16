@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="partial_delivery_approve_form_view" model="ir.ui.view">
+        <field name="name">partial.delivery.aprrove.form.view</field>
+        <field name="model">wizard.partial.delivery.approve</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="delivery_id" string="Delivery Id"/>
+                    </group>
+                    <footer>
+                        <button name="action_approval_send" string="Send Approval request" type="object" class="btn-primary"/>
+                        <button string="Cancel" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="stock_picking_form_view" model="ir.ui.view">
+        <field name="name">stock.picking.form.view</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_detailed_operations']" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button type="object"
+                            name="action_approval_request"
+                            string="Approval Request"
+                            class="oe_stat_button"
+                            icon="fa-list"
+                            />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
