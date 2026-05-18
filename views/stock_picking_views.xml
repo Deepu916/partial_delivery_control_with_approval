@@ -5,15 +5,18 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_detailed_operations']" position="before">
-                <div class="oe_button_box" name="button_box">
-                    <button type="object"
-                            name="action_approval_request"
-                            string="Approval Request"
-                            class="oe_stat_button"
-                            icon="fa-list"
-                            />
-                </div>
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">state != 'draft'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_validate']" position="attributes">
+                <attribute name="invisible">state in ['approval','done']</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_validate']" position="after">
+                <button name="action_approved"
+                        string="Approved"
+                        class="btn-primary"
+                        type="object"
+                        invisible="(uid not in user_ids) or (state != 'approval') "/>
             </xpath>
         </field>
     </record>
