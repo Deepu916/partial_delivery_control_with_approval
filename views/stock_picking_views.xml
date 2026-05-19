@@ -9,14 +9,14 @@
                 <attribute name="invisible">state != 'draft'</attribute>
             </xpath>
             <xpath expr="//button[@name='button_validate']" position="attributes">
-                <attribute name="invisible">state in ['approval','done']</attribute>
+                <attribute name="invisible">state in ['approval','done','draft']</attribute>
             </xpath>
             <xpath expr="//button[@name='button_validate']" position="after">
                 <button name="action_approved"
                         string="Approved"
                         class="btn-primary"
                         type="object"
-                        invisible="(uid not in user_ids) or (state != 'approval') "/>
+                        invisible="(uid not in user_ids) or (state != 'approval')"/>
             </xpath>
         </field>
     </record>

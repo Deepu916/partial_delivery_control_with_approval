@@ -18,7 +18,8 @@ class StockPicking(models.Model):
     def _compute_user_ids(self):
         """Compute approval user ids"""
         for record in self:
-            value = self.env['ir.config_parameter'].sudo().get_param('stock_picking.partial_delivery_approval_user_ids')
+            value = self.env['ir.config_parameter'].sudo().get_param(
+                'stock_picking.partial_delivery_approval_user_ids')
             users_ids = ast.literal_eval(value) if value else []
             record.user_ids = [fields.Command.set(users_ids)]
 
@@ -26,18 +27,18 @@ class StockPicking(models.Model):
     def button_validate(self):
         """Validate the stock picking operation"""
         if self.picking_type_code == 'outgoing':
-            res = super().button_validate()
-            for ids in self.move_ids:
-                if not ids.product_id.allow_partial_delivery:
-                    if ids.product_uom_qty > ids.quantity:
-                        self.partial_delivery_line = True
-                        break
-            if self.partial_delivery_line:
-                self.write({'state': 'approval', 'is_approval_sent': True})
-            return res
-        # super().button_validate()
+            if not self.env.context.get('skip_partial_approval'):
+                for ids in self.move_ids:
+                    if not ids.product_id.allow_partial_delivery:
+                        if ids.product_uom_qty > ids.quantity:
+                            self.partial_delivery_line = True
+                            break
+                if self.partial_delivery_line and self.uid not in self.user_ids:
+                    self.write({'state': 'approval', 'is_approval_sent': True})
+                    return True
+                return super().button_validate()
+        return super().button_validate()
 
     def action_approved(self):
         """Approve stock picking"""
-        self.button_validate()
-        self.is_approval_sent = False
+        return  self.with_context(skip_partial_approval = True).button_validate()
