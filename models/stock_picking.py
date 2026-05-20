@@ -9,8 +9,7 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
 
-    is_approval_sent = fields.Boolean(string='Status')
-    state = fields.Selection(selection_add=[('approval','Approval Waiting'),('done','Done')])
+    state = fields.Selection(selection_add=[('approval','Approval Waiting'),('assigned','Ready')])
     user_ids = fields.Many2many('res.users', string='Users',compute='_compute_user_ids')
     partial_delivery_line = fields.Boolean(string='Partial delivery line')
 
@@ -26,18 +25,26 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         """Validate the stock picking operation"""
+        print("validate", self.state, self.env.context.get('skip_partial_approval'))
+
+        if self.env.context.get('skip_partial_approval'):
+            print("Approved")
+            self.state ='assigned'
+            return super().button_validate()
+
         if self.picking_type_code == 'outgoing':
-            if not self.env.context.get('skip_partial_approval'):
-                for ids in self.move_ids:
-                    if not ids.product_id.allow_partial_delivery:
-                        if ids.product_uom_qty > ids.quantity:
-                            self.partial_delivery_line = True
-                            break
-                if self.partial_delivery_line and self.uid not in self.user_ids:
-                    self.write({'state': 'approval', 'is_approval_sent': True})
-                    return True
-                return super().button_validate()
+            for ids in self.move_ids:
+                if not ids.product_id.allow_partial_delivery:
+                    if ids.product_uom_qty > ids.quantity:
+                        self.partial_delivery_line = True
+                        break
+            if self.partial_delivery_line and self.env.user.id not in self.user_ids.ids:
+                self.write({'state': 'approval'})
+                return True
+            print("validate")
+            return super().button_validate()
         return super().button_validate()
+
 
     def action_approved(self):
         """Approve stock picking"""
